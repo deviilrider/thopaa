@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "415621919794",
+    "project_id": "thopaa-c579d",
+    "storage_bucket": "thopaa-c579d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415621919794:android:b6f72e4ae35298ff12782b",
+        "android_client_info": {
+          "package_name": "sewahub.com.thopaa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415621919794-4krtgu0d13mb03gfpfercinj4tbl7grr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sewahub.com.thopaa",
+            "certificate_hash": "2be05dda3ab371632a9cdd3cb53414e381406e99"
+          }
+        },
+        {
+          "client_id": "415621919794-psr26pfgr4riskhr165ej4g7p8nnr0le.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbHMR3XfPCuVKQDKtajqnrScyVpV2ERMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "415621919794-psr26pfgr4riskhr165ej4g7p8nnr0le.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
