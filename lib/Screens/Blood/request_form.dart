@@ -1,14 +1,11 @@
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:thopaa/Auth/firebase.dart';
+import 'package:thopaa/Server/firebase.dart';
+import 'package:thopaa/Model/request_data.dart';
 import 'package:thopaa/Widgets/dropdown.dart';
 import 'package:thopaa/export.dart';
 
@@ -64,6 +61,8 @@ class _RequestFormViewState extends State<RequestFormView> {
   String? itemSelected;
   Position? currentPosition;
   late Placemark placeNow;
+  double lat = 27.80;
+  double long = 85.02;
 
   AuthService authService = AuthService();
 
@@ -73,11 +72,8 @@ class _RequestFormViewState extends State<RequestFormView> {
     init();
   }
 
-  void init() async {}
-
-  @override
-  void setState(fn) {
-    if (mounted) super.setState(fn);
+  void init() async {
+    getCurrentPosition();
   }
 
   Future<void> getCurrentPosition() async {
@@ -90,6 +86,8 @@ class _RequestFormViewState extends State<RequestFormView> {
           currentAddress =
               '${place.street}, ${place.subLocality},${place.subAdministrativeArea}, ${place.postalCode}';
           addressCont.text = currentAddress.toString();
+          lat = currentPosition!.latitude;
+          long = currentPosition!.longitude;
         });
       });
     }).catchError((e) {
@@ -143,62 +141,51 @@ class _RequestFormViewState extends State<RequestFormView> {
     );
   }
 
-  // void registerUser() async {
-  //   hideKeyboard(context);
+  void addRequest() async {
+    hideKeyboard(context);
 
-  //   if (appStore.isLoading) return;
+    if (appStore.isLoading) return;
 
-  //   if (formKey.currentState!.validate()) {
-  //     formKey.currentState!.save();
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
 
-  //     /// If Terms and condition is Accepted then only the user will be registered
-  //     if (isAcceptedTc) {
-  //       appStore.setLoading(true);
+      /// If Terms and condition is Accepted then only the user will be registered
+      //     if (isAcceptedTc) {
+      appStore.setLoading(true);
 
-  //       //   /// Create a temporary request to send
-  //       UserData tempRegisterData = UserData()
-  //         ..contactNumber = buildMobileNumber()
-  //         ..firstName = ptfirstName.text.trim()
-  //         ..lastName = ptlastName.text.trim()
-  //         ..loginType = LOGIN_TYPE_USER
-  //         ..username = userNameCont.text.trim()
-  //         ..email = emailCont.text.trim()
-  //         ..password = passwordCont.text.trim()
-  //         ..address = addressCont.text
-  //         ..bloodGroup = itemSelected.toString()
-  //         ..cityName = placeNow.administrativeArea.toString();
+      //   /// Create a temporary request to send
+      RequestBloodData reqTemp = RequestBloodData()
+        ..ptfirstName = ptfirstName.text.trim()
+        ..ptlastName = ptlastName.text.trim()
+        ..bloodGroup = itemSelected.toString()
+        ..bloodType = bloodTypeCont.text.trim()
+        ..bloodAmount = bloodAmtCont.text.trim()
+        ..address = addressCont.text
+        ..requiredDate = selectedDate
+        ..needTime = selectedTime
+        ..contactNumber = mobileCont.text.trim()
+        ..needFor = bloodRqdCont.text.trim()
+        ..description = descCont.text.trim()
+        ..priority = priority.text.trim()
+        ..lat = lat
+        ..long = long;
 
-  //       createUsers(tempRegisterData: tempRegisterData);
-  //     }
-  //   } else {
-  //     isFirstTimeValidation = false;
-  //     setState(() {});
-  //   }
-  // }
+      requestBloodData(tempData: reqTemp);
+    } else {
+      isFirstTimeValidation = false;
+      setState(() {});
+    }
+  }
 
-  // Future<void> createUsers({required UserData tempRegisterData}) async {
-  //   await authService
-  //       .signupwithEmailandPassword(
-  //           name: userNameCont.text.trim(),
-  //           email: emailCont.text.trim(),
-  //           password: passwordCont.text.trim())
-  //       .then((value) async {
-  //     if (value == AuthResultStatus.successful) {
-  //       authService.createUser(tempRegisterData);
-  //     } else {
-  //       toast('Something Wrong');
-  //     }
-
-  //     appStore.setLoading(false);
-  //     await appStore.setLoginType(tempRegisterData.loginType!);
-
-  //     //   /// Back to sign in screen
-  //     finish(context);
-  //   }).catchError((e) {
-  //     appStore.setLoading(false);
-  //     toast(e.toString());
-  //   });
-  // }
+  Future<void> requestBloodData({required RequestBloodData tempData}) async {
+    if (tempData.ptfirstName != null) {
+      authService.requestBloodDonor(tempData).then((value) {
+        appStore.setLoading(false);
+      });
+    } else {
+      toast('Something Wrong');
+    }
+  }
 
   //endregion
 

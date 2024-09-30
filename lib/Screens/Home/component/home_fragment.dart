@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:thopaa/Screens/Home/widget/request_widget.dart';
+import 'package:thopaa/Screens/Home/widget/utiliti_widgets.dart';
 import 'package:thopaa/Screens/Search/search.dart';
 import 'package:thopaa/Widgets/dropdown.dart';
 import 'package:thopaa/export.dart';
@@ -187,11 +188,9 @@ class _HomeFragmentViewState extends State<HomeFragmentView> {
                 ),
                 5.height,
                 RequestWidgetHomeScreen(),
-                10.height,
-                Container(
-                  height: 200,
-                  child: Text('More Access'),
-                )
+                20.height,
+                UtilityWidgetHomeScreen(),
+                20.height,
               ],
             ),
           ),

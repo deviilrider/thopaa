@@ -10,14 +10,14 @@ class UserData {
   String? lastName;
   String? username;
   int? providerId;
-  int? status;
+  String? status;
   int? totalBooking;
 
   ///check its use
   String? description;
   String? knownLanguages;
-  String? whyChooseMe;
-  String? skills;
+  String? lat;
+  String? long;
   String? userType;
   String? email;
   String? contactNumber;
@@ -66,7 +66,7 @@ class UserData {
 
   List<String> get knownLanguagesArray => buildKnownLanguages();
 
-  List<String> get skillsArray => buildSkills();
+  List<String> get longArray => buildlong();
 
   List<String> buildKnownLanguages() {
     List<String> array = [];
@@ -79,11 +79,11 @@ class UserData {
     return array;
   }
 
-  List<String> buildSkills() {
+  List<String> buildlong() {
     List<String> array = [];
-    String tempSkills = skills.validate();
-    if (tempSkills.isNotEmpty && tempSkills.isJson()) {
-      Iterable it2 = jsonDecode(skills.validate());
+    String templong = long.validate();
+    if (templong.isNotEmpty && templong.isJson()) {
+      Iterable it2 = jsonDecode(long.validate());
       array.addAll(it2.map((e) => e.toString()).toList());
     }
 
@@ -107,8 +107,8 @@ class UserData {
       this.lastName,
       this.description,
       this.knownLanguages,
-      this.whyChooseMe,
-      this.skills,
+      this.lat,
+      this.long,
       this.providerType,
       this.cityName,
       this.providerId,
@@ -173,8 +173,8 @@ class UserData {
         isFavourite: json['is_favourite'],
         description: json['description'],
         knownLanguages: json['known_languages'],
-        whyChooseMe: json['why_choose_me'],
-        skills: json['skills'],
+        lat: json['lat'],
+        long: json['long'],
         providerType: json['providertype'],
         cityName: json['city_name'],
         loginType: json['login_type'],
@@ -226,8 +226,8 @@ class UserData {
     if (this.description != null) data['description'] = this.description;
     if (this.knownLanguages != null)
       data['known_languages'] = this.knownLanguages;
-    if (this.whyChooseMe != null) data['why_choose_me'] = this.whyChooseMe;
-    if (this.skills != null) data['skills'] = this.skills;
+    if (this.lat != null) data['lat'] = this.lat;
+    if (this.long != null) data['long'] = this.long;
     if (this.providerType != null) data['providertype'] = this.providerType;
     if (this.cityName != null) data['city_name'] = this.cityName;
     if (this.timeZone != null) data['time_zone'] = this.timeZone;
@@ -294,8 +294,8 @@ class UserData {
         isFavourite: json['is_favourite'],
         description: json['description'],
         knownLanguages: json['known_languages'],
-        whyChooseMe: json['why_choose_me'],
-        skills: json['skills'],
+        lat: json['lat'],
+        long: json['long'],
         providerType: json['providertype'],
         cityName: json['city_name'],
         loginType: json['login_type'],

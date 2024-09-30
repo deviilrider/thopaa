@@ -1,24 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:thopaa/export.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SearchBloodGroupScreen extends StatefulWidget {
-  final String? bloodGroup;
-
-  const SearchBloodGroupScreen({super.key, this.bloodGroup});
+class BloodBankListScreen extends StatefulWidget {
+  const BloodBankListScreen({super.key});
 
   @override
-  State<SearchBloodGroupScreen> createState() => _SearchBloodGroupScreenState();
+  State<BloodBankListScreen> createState() => _BloodBankListScreenState();
 }
 
-class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
+class _BloodBankListScreenState extends State<BloodBankListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: appBarWidget(
-          language.search,
+          "Blood Bank List",
           textColor: white,
           textSize: APP_BAR_TEXT_SIZE,
           elevation: 4.0,
@@ -27,10 +25,8 @@ class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
           actions: [],
         ),
         body: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('Users')
-                .where("bloodGroup", isEqualTo: widget.bloodGroup)
-                .snapshots(),
+            stream:
+                FirebaseFirestore.instance.collection('BloodBank').snapshots(),
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
@@ -41,35 +37,27 @@ class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
                 return ListView.separated(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (_, index) {
-                      var t = document.docs[index]["last_donated"] as Timestamp;
-                      var date = t.toDate();
-                      var dateToday = DateTime.now();
-                      var difference = dateToday.difference(date).inDays;
-
                       return ListTile(
-                          tileColor: difference > 120
-                              ? Colors.green[300]
-                              : Colors.red[100],
                           leading: CircleAvatar(
                             radius: 25,
                             backgroundColor: redColor,
                             child: CircleAvatar(
                                 radius: 23,
                                 child: Text(
-                                  document.docs[index]["first_name"][0],
+                                  document.docs[index]["bloodbankName"][0],
                                   style: TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.bold),
                                 )),
                           ),
                           title: Text(
-                            "${document.docs[index]["first_name"]} ${document.docs[index]["last_name"]} ",
+                            "${document.docs[index]["bloodbankName"]}",
                             style: TextStyle(
                                 fontSize: 20.0, fontWeight: FontWeight.w700),
                           ),
-                          subtitle: Text(difference > 120
-                              ? "Can Donate"
-                              : "Can't Donate Now"),
+                          subtitle: Text(
+                            "${document.docs[index]["bbnumber"]}",
+                          ),
                           trailing: TextButton(
                               // color: kPrimaryColor,
                               // textColor: Colors.white,
@@ -80,12 +68,13 @@ class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
                                 'Details',
                                 textScaleFactor: 1.05,
                               ),
-                              onPressed: () {}
-                              // navigateToDetail(snapshot.data[index]),
-                              ),
+                              onPressed: () {
+                                var datas = document.docs[index];
+                                showHospitalDetails(context, datas);
+                              }),
                           onTap: () {
                             var datas = document.docs[index];
-                            showUserDetails(context, datas);
+                            showHospitalDetails(context, datas);
                           });
                     },
                     separatorBuilder: (BuildContext context, int index) =>
@@ -94,21 +83,18 @@ class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
                         ));
               } else {
                 return Center(
-                  child: Text('No users found'),
+                  child: Text('No any blood bank found'),
                 );
               }
             }));
   }
 
-  showUserDetails(context, QueryDocumentSnapshot d) {
-    var t = d["last_donated"] as Timestamp;
-    var dates = t.toDate();
-    var dif = DateTime.now().difference(dates).inDays;
+  showHospitalDetails(context, QueryDocumentSnapshot d) {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Donor Info"),
+            title: Text("Blood Bank Info"),
             content: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +113,7 @@ class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: CachedImageWidget(
-                        url: d['profileUrl'],
+                        url: "#",
                         height: 90,
                         width: 90,
                         fit: BoxFit.cover,
@@ -137,48 +123,42 @@ class _SearchBloodGroupScreenState extends State<SearchBloodGroupScreen> {
                   ),
                 ),
                 Divider(),
-                Text("Name: ${d["first_name"]} ${d["last_name"]}"),
+                Text("Name: ${d["bloodbankName"]}"),
                 Text("Address: ${d["address"]}"),
-                Text("Blood Group: ${d["bloodGroup"]}"),
-                Text(
-                    "Last Donated: ${dates.year}/${dates.month}/${dates.day} ($dif days back)"),
-                d['status'] == "1"
-                    ? Text(
-                        "Status: Avaliable",
-                        style: TextStyle(color: Colors.green[300]),
-                      )
-                    : Text("Status: Not-Avaliable",
-                        style: TextStyle(color: Colors.red[300])),
+                Text("Description: ${d["desc"]}"),
                 Divider(),
               ],
             ),
             actionsAlignment: MainAxisAlignment.spaceBetween,
             actions: [
               TextButton(
-                child: Text('Message'),
+                child: Text('Location'),
                 onPressed: () {
-                  //make screen to go to chat
+                  commonLaunchUrl(d['link'],
+                      launchMode: LaunchMode.externalApplication);
+                  // launchMaps(context, d["bloodbankName"],
+                  //     double.parse(d["lat"]), double.parse(d["long"]));
                 },
               ),
               TextButton(
                 child: Text('Call'),
                 onPressed: () {
-                  if (d["showPhone"] == 1) {
-                    launchCall("+${d["contact_number"]}");
-                  } else {
-                    toast(
-                        "Contact Number is not available. Please contact admin!!");
-                  }
+                  // if (d["bbnumber"] == 1) {
+                  launchCall("+977${d["bbnumber"]}");
+                  // } else {
+                  //   toast(
+                  //       "Contact Number is not available. Please contact admin!!");
+                  // }
                 },
               ),
               TextButton(
                 child: Text('Email'),
                 onPressed: () {
-                  if (d["showEmail"] == 1) {
-                    launchMail(d["email"]);
-                  } else {
-                    toast("Email is private. Please contact admin!!");
-                  }
+                  // if (d["bbemail"] == 1) {
+                  launchMail(d["bbemail"]);
+                  // } else {
+                  //   toast("Email is private. Please contact admin!!");
+                  // }
                 },
               )
             ],

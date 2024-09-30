@@ -43,6 +43,18 @@ void launchMap(String? url) {
   }
 }
 
+void launchMaps(BuildContext context, String bbname, double latitude,
+    double longitude) async {
+  try {
+    String markerLabel = bbname;
+    final url = Uri.parse(
+        'geo:$latitude,$longitude?q=$latitude,$longitude($markerLabel)');
+    await launchUrl(url);
+  } catch (error) {
+    toast(error.toString());
+  }
+}
+
 void launchMail(String url) {
   if (url.validate().isNotEmpty) {
     commonLaunchUrl('$MAIL_TO$url', launchMode: LaunchMode.externalApplication);

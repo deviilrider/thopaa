@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:thopaa/Auth/handler/auth_result_handler.dart';
+import 'package:thopaa/Server/handler/auth_result_handler.dart';
+import 'package:thopaa/Model/request_data.dart';
 import 'package:thopaa/Model/user_data_model.dart';
 
 class AuthService {
@@ -85,10 +86,40 @@ class AuthService {
     final data = snapshot.data() as Map<String, dynamic>;
     return UserData.fromMap(data);
   }
+
+  //createuser in database
+  Future<void> updateUser(String uid, value, String field) async {
+    try {
+      database
+          .collection('Users')
+          .doc(uid)
+          .set({field: value}, SetOptions(merge: true)).then((value) {
+        toast('Data added to database');
+      });
+    } catch (e) {
+      toast(e.toString());
+    }
+  }
+
   // }
   //   DocumentSnapshot documentSnapshot =
   //       await database.collection("users").doc(uid).get();
   //   print(documentSnapshot.data()['uid']);
   //   return UserData.fromMap(documentSnapshot.data());
   // }
+
+  //createuser in database
+  Future<void> requestBloodDonor(RequestBloodData data) async {
+    try {
+      database
+          .collection('Request Blood')
+          .doc()
+          .set(data.toJson())
+          .whenComplete(() {
+        toast('Donor is notified. Keep updates!');
+      });
+    } catch (e) {
+      toast(e.toString());
+    }
+  }
 }

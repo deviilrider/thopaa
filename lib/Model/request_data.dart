@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class RequestBloodData {
@@ -6,12 +7,12 @@ class RequestBloodData {
   String? ptlastName;
   String? bloodGroup;
   String? bloodType;
-  int? bloodAmount;
-  String? lat;
-  String? long;
+  String? bloodAmount;
+  double? lat;
+  double? long;
   String? address;
   DateTime? requiredDate;
-  String? needTime;
+  TimeOfDay? needTime;
   String? contactNumber;
   String? needFor;
   String? description;

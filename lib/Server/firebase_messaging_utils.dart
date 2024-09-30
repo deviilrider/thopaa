@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:nb_utils/nb_utils.dart';
@@ -248,4 +247,45 @@ void showNotification(
 
   flutterLocalNotificationsPlugin.show(
       id, title, parseHtmlString(message), platformChannelSpecifics);
+}
+
+class PushNotificationService {
+  FirebaseMessaging _fcm = FirebaseMessaging.instance;
+
+  Future initialize() async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+  }
+
+  Future<String?> getToken() async {
+    String? token = await _fcm.getToken();
+    print('Token: $token');
+    return token;
+  }
+
+  Future<void> backgroundHandler(RemoteMessage message) async {
+    print('Handling a background message ${message.messageId}');
+  }
+
+  Future initialized() async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+
+    FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+
+    // Get the token
+    await getToken();
+  }
 }

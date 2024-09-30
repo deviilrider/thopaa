@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:thopaa/Auth/firebase.dart';
-import 'package:thopaa/Auth/handler/auth_result_handler.dart';
+import 'package:thopaa/Server/firebase.dart';
+import 'package:thopaa/Server/handler/auth_result_handler.dart';
 import 'package:thopaa/export.dart';
 
 class SignInScreenView extends StatefulWidget {

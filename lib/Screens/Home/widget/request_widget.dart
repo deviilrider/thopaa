@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:thopaa/Screens/Home/widget/slider_request_blood.dart';
+import 'package:thopaa/export.dart';
 
 class RequestWidgetHomeScreen extends StatefulWidget {
   const RequestWidgetHomeScreen({super.key});
@@ -22,7 +23,13 @@ class _RequestWidgetHomeScreenState extends State<RequestWidgetHomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Text('Requested Blood'), Text('View All>>')],
+            children: [
+              Text(
+                'Requested Blood',
+                style: sectionTextTitleStyle(),
+              ),
+              Text('View All>>')
+            ],
           ),
           10.height,
           SliderRequest(

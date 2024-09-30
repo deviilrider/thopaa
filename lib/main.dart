@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:thopaa/Auth/firebase_messaging_utils.dart';
+import 'package:thopaa/Server/firebase_messaging_utils.dart';
 import 'package:thopaa/export.dart';
 
 //region Handle Background Firebase Message
@@ -73,9 +73,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final PushNotificationService _notificationService =
+      PushNotificationService();
   @override
   void initState() {
     super.initState();
+    _notificationService.initialize();
   }
 
   @override

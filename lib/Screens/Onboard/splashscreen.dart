@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:thopaa/Auth/firebase.dart';
+import 'package:thopaa/Server/firebase.dart';
+import 'package:thopaa/Server/firebase_messaging_utils.dart';
 import 'package:thopaa/export.dart';
 
 class SplashScreenView extends StatefulWidget {
@@ -15,6 +18,41 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   bool appNotSynced = false;
 
   AuthService auth = AuthService();
+  String? currentAddress;
+  String? itemSelected;
+  Position? currentPosition;
+  late Placemark placeNow;
+
+  Future<void> getCurrentPosition() async {
+    final hasPermission = await handleLocationPermission(context);
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      getAddressFromLatLng(position).then((place) {
+        setState(() {
+          currentAddress =
+              '${place.street}, ${place.subLocality},${place.subAdministrativeArea}, ${place.postalCode}';
+        });
+      });
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<Placemark> getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+            currentPosition!.latitude, currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        placeNow = place;
+      });
+    }).catchError((e) {
+      debugPrint(e);
+    });
+
+    return placeNow;
+  }
 
   @override
   void initState() {
@@ -44,6 +82,11 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     auth.getCurrentUser().then((user) {
       auth.fetchUserDetails(user.uid).then((userData) {
         saveUserData(userData);
+        PushNotificationService().getToken().then((fcm) {
+          auth.updateUser(user.uid, fcm!, 'api_token');
+        });
+        auth.updateUser(user.uid, currentPosition!.latitude, 'lat');
+        auth.updateUser(user.uid, currentPosition!.longitude, 'long');
       });
     });
 
